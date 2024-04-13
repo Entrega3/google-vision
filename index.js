@@ -1,4 +1,7 @@
 const vision = require('@google-cloud/vision')
+const {Translate} = require('@google-cloud/translate').v2;
+
+// Crear un cliente de Translate
 const path = require('path');
 const express = require('express');
 const multer = require('multer');
@@ -27,22 +30,30 @@ app.get("/", (req, res)=>{
     res.render("upload")
 })
 
-app.post("/upload", upload.single('image'), (req, res) =>{
+app.post("/upload", upload.single('image'), async(req, res) =>{
     if (!req.file) {
         return res.status(400).send('No file uploaded.');
     }
     const filePath = path.join(__dirname, req.file.path);
 
-    const text = opticalRecognition(filePath)
-    
+    const text = await opticalRecognition(filePath)
+    const translation = await translateText(text, 'en')
+    console.log(translation)
+    res.send("La traduccion es: " + translation)
 })
 
 const client = new vision.ImageAnnotatorClient({ keyFilename });
+const translate = new Translate({keyFilename})
 
 async function opticalRecognition(imagePath){
     const [result] = await client.textDetection(imagePath);
     const detections = result.textAnnotations;
     return detections.at(0).description
+}
+
+async function translateText(text, targetLanguage) {
+    const [translation] = await translate.translate(text, targetLanguage);
+    return translation;
 }
 
 

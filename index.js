@@ -9,16 +9,14 @@ const multer = require('multer');
 
 const app = express()
 app.use(cors()); 
-const port = 3001
+app.use(express.json());
+const port = process.env.PORT || 3001;
 
-//Dependencia que sirve para subir archivos en express, guarda todo en /uploads.
+//Guarda todo en /uploads.
 const upload = multer({
-    dest: 'uploads/'  // This is the folder where files will be saved temporarily
+    dest: 'uploads/' 
 });
 
-
-app.set('views', './views'); // Define la carpeta donde se guardarán tus archivos Pug
-app.set('view engine', 'pug'); // Establece Pug como el motor de plantillas
 
 app.listen(port, ()=>
 {
@@ -43,6 +41,22 @@ app.post("/upload", upload.single('image'), async(req, res) =>{
     console.log(translation)
     res.json({text, translation})
 })
+
+app.post("/translate", async(req, res) => {
+    const { text } = req.body;
+
+    if (!text) {
+        return res.status(400).send('No text provided.');
+    }
+
+    try {
+        const translation = await translateText(text, 'es');
+        res.json({ translation });
+    } catch (error) {
+        console.error('Error translating text:', error);
+        res.status(500).send('Error translating text.');
+    }
+});
 
 const client = new vision.ImageAnnotatorClient({ keyFilename });
 const translate = new Translate({keyFilename})

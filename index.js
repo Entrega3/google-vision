@@ -4,10 +4,12 @@ const {Translate} = require('@google-cloud/translate').v2;
 // Crear un cliente de Translate
 const path = require('path');
 const express = require('express');
+const cors = require('cors');
 const multer = require('multer');
 
 const app = express()
-const port = 3000
+app.use(cors()); 
+const port = 3001
 
 //Dependencia que sirve para subir archivos en express, guarda todo en /uploads.
 const upload = multer({
@@ -37,9 +39,9 @@ app.post("/upload", upload.single('image'), async(req, res) =>{
     const filePath = path.join(__dirname, req.file.path);
 
     const text = await opticalRecognition(filePath)
-    const translation = await translateText(text, 'en')
+    const translation = await translateText(text, 'es')
     console.log(translation)
-    res.send("La traduccion es: " + translation)
+    res.json({text, translation})
 })
 
 const client = new vision.ImageAnnotatorClient({ keyFilename });

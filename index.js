@@ -26,7 +26,8 @@ app.listen(port, ()=>
 })
 
 // Importando el archivo de configuracion de google API Vision.
-const credentials = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) || path.join(__dirname, 'uniperruno.json');
+// const keyFilename = path.join(__dirname, 'uniperruno.json');
+const credentials = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) || path.join(__dirname, 'uniperruno.json')
 
 app.get("/", (req, res)=>{
     res.render("upload")

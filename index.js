@@ -39,7 +39,7 @@ app.post("/upload", upload.single('image'), async(req, res) =>{
     const filePath = path.join(__dirname, req.file.path);
 
     const text = await opticalRecognition(filePath)
-    const translation = await translateText(text, 'es')
+    const translation = await translateText(text, 'en')
     console.log(translation)
     res.json({text, translation})
 })
@@ -52,7 +52,7 @@ app.post("/translate", async(req, res) => {
     }
 
     try {
-        const translation = await translateText(text, 'es');
+        const translation = await translateText(text, 'en');
         res.json({ translation });
     } catch (error) {
         console.error('Error translating text:', error);

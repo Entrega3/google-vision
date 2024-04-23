@@ -1,6 +1,8 @@
 const vision = require('@google-cloud/vision')
 const {Translate} = require('@google-cloud/translate').v2;
 
+require('dotenv').config();
+
 // Crear un cliente de Translate
 const path = require('path');
 const express = require('express');
@@ -24,7 +26,7 @@ app.listen(port, ()=>
 })
 
 // Importando el archivo de configuracion de google API Vision.
-const keyFilename = path.join(__dirname, 'uniperruno.json');
+const credentials = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) || path.join(__dirname, 'uniperruno.json');
 
 app.get("/", (req, res)=>{
     res.render("upload")
@@ -58,8 +60,10 @@ app.post("/translate", async(req, res) => {
     }
 });
 
-const client = new vision.ImageAnnotatorClient({ keyFilename });
-const translate = new Translate({keyFilename})
+
+
+const client = new vision.ImageAnnotatorClient({credentials});
+const translate = new Translate({credentials})
 
 async function opticalRecognition(imagePath){
     const [result] = await client.textDetection(imagePath);
